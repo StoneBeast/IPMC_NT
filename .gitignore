@@ -1,0 +1,4 @@
+.vscode
+project/*
+!project/RCT6_Project.uvoptx
+!project/RCT6_Project.uvprojx
