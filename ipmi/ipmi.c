@@ -32,13 +32,6 @@ void ipmc_init(void)
     init_ipmi_sdr();
 }
 
-static uint8_t get_ga(void)
-{
-    //TODO: 读取gpio引脚
-    
-    return 0x01;
-}
-
 static void get_ipmb_addr(void)
 {
     uint8_t ga = get_ga();

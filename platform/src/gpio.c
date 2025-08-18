@@ -1,3 +1,11 @@
+/*** 
+ * @Author       : stoneBeast
+ * @Date         : 2025-08-06 17:00:27
+ * @Encoding     : UTF-8
+ * @LastEditors  : stoneBeast
+ * @LastEditTime : 2025-08-18 18:10:20
+ * @Description  : 
+ */
 #include "platform.h"
 void init_gpio(void)
 {
@@ -10,6 +18,60 @@ void init_gpio(void)
 
     GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+}
+
+static void init_ga_pin(void)
+{
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOA, ENABLE);
+
+    GPIO_InitTypeDef GPIO_InitStruct;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_10MHz;
+
+    GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_7;
+    GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_8;
+    GPIO_Init(GPIOC, &GPIO_InitStruct);
+    
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9;
+    GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+}
+
+uint8_t get_ga(void)
+{
+    uint8_t ga = 0;
+    uint8_t temp = 0;
+
+    init_ga_pin();
+    
+    temp = GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_8);
+    ga &= (~(0x01));
+    ga |= temp;
+
+    temp = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_6);
+    ga &= (~(0x02));
+    ga |= (temp << 1);
+
+    temp = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_7);
+    ga &= (~(0x04));
+    ga |= (temp << 2);
+
+    temp = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_8);
+    ga &= (~(0x08));
+    ga |= (temp << 3);
+
+    temp = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_9);
+    ga &= (~(0x10));
+    ga |= (temp << 4);
+
+    return ga;
 }
 
 void ledOn(void) 
