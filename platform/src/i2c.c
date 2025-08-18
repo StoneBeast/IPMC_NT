@@ -14,6 +14,7 @@
 
 uint8_t ipmi_recv_buf[IPMI_PROTOCOL_MAX_LEN] = {0};
 static uint8_t ipmi_send_buf[IPMI_PROTOCOL_MAX_LEN] = {0};
+extern uint8_t g_addr;
 
 static void __init_i2c(I2C_TypeDef* i2cx, uint8_t addr);
 static void __init_ipmi_i2c_dma(void);
@@ -76,9 +77,10 @@ static void __init_i2c(I2C_TypeDef* i2cx, uint8_t addr)
         NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
         NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
         NVIC_Init(&NVIC_InitStructure);
+        I2C_StretchClockCmd(IPMI_I2C, DISABLE);
     }
 
-    I2C_Cmd(i2cx, ENABLE);              // 使能I2C2
+    I2C_Cmd(i2cx, ENABLE); // 使能I2C2
 }
 
 static void __init_ipmi_i2c_dma(void)
@@ -205,7 +207,10 @@ int I2C_satrt_send(uint8_t addr, const uint8_t* data_buf)
 void I2C_reset(void)
 {
     // TODO: 需要根据不同原因，指定不同的防锁死的方法
-    I2C_GenerateSTOP(IPMI_I2C, ENABLE);
+    // I2C_GenerateSTOP(IPMI_I2C, ENABLE);
+    I2C_SoftwareResetCmd(IPMI_I2C, ENABLE);
+    I2C_SoftwareResetCmd(IPMI_I2C, DISABLE);
+    init_ipmi_i2c(g_addr);
 }
 
 /* if ((int32_t)((uint32_t)(timer_task->time_until-now_tick)) < 0) */

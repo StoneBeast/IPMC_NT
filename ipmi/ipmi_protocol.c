@@ -47,10 +47,6 @@ int ipmi_response(uint8_t addr, uint8_t code, const uint8_t* msg, uint16_t msg_l
     return ipmi_msg_send(addr, IPMI_MSG_TYPE_RES, code, msg, msg_len, 200);
 }
 
-int ipmi_event_send(const ipmi_event* event)
-{
-    return ipmi_msg_send(BMC_ADDR, IPMI_MSG_TYPE_EVENT, 0x01, (uint8_t*)event, sizeof(ipmi_event), 200);
-}
 
 /***
  * @brief 发送ipmi消息
@@ -70,7 +66,7 @@ static int ipmi_msg_send(uint8_t addr, uint8_t type, uint8_t code, const uint8_t
     uint8_t send_msg[IPMI_PROTOCOL_MAX_LEN] = {0};
 
     /* 判断msg */
-    if (msg == NULL || msg_len > IPMI_PROTOCOL_DATA_MAX_LEN) {
+    if (msg_len > IPMI_PROTOCOL_DATA_MAX_LEN) {
         return IPMI_ERR_MSG_ERROR;
     }
 
@@ -78,6 +74,7 @@ static int ipmi_msg_send(uint8_t addr, uint8_t type, uint8_t code, const uint8_t
     while (1 == I2C_busy_status()) {
         if (try_count > IPMB_BUSY_TRY_COUNT) {
             ret = IPMI_ERR_BUSY;
+            I2C_reset();
             goto SEND_END;
         }
         delay_ms(IPMB_BUSY_TRY_INTERVAL_MS);
@@ -87,7 +84,8 @@ static int ipmi_msg_send(uint8_t addr, uint8_t type, uint8_t code, const uint8_t
     /* 填充IPMI消息固定成员 */
     memcpy(&(send_msg[IPMI_PROTOCOL_MSG_TYPE_OFFSET]), &type, IPMI_PROTOCOL_MSG_TYPE_LEN);
     memcpy(&(send_msg[IPMI_PROTOCOL_MSG_CODE_OFFSET]), &code, IPMI_PROTOCOL_MSG_CODE_LEN);
-    memcpy(&(send_msg[IPMI_PROTOCOL_MSG_DATA_LEN_OFFSET]), &msg_len, IPMI_PROTOCOL_MSG_DATA_LEN_LEN);
+    if (msg_len != 0)
+        memcpy(&(send_msg[IPMI_PROTOCOL_MSG_DATA_LEN_OFFSET]), &msg_len, IPMI_PROTOCOL_MSG_DATA_LEN_LEN);
     memcpy(&(send_msg[IPMI_PROTOCOL_MSG_DATA_OFFSET]), msg, msg_len);
     /* 添加校验和 */
     get_chksum(send_msg);
@@ -98,7 +96,6 @@ static int ipmi_msg_send(uint8_t addr, uint8_t type, uint8_t code, const uint8_t
         goto SEND_END;
     } else if (i2c_ret == I2C_ERR_ADDR) {
         ret = IPMI_ERR_NO_DEVICE;
-        I2C_reset();
         goto SEND_END;
     }
 
