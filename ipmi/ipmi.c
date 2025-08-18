@@ -71,7 +71,7 @@ void ipmi_msg_handler(void)
         switch (code)
         {
         case IPMI_MSG_CODE_SCAN:
-            req[0] = g_addr;
+            res[0] = g_addr;
             res_body_len = 1;
             break;
         case IPMI_MSG_CODE_GET_SDR:
