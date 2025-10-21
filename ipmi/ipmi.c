@@ -29,6 +29,7 @@ void ipmc_init(void)
     if (init_ret != 0)
         while(1);
 
+    init_sensor_i2c();
     init_ipmi_sdr();
 }
 

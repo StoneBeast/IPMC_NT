@@ -9,6 +9,8 @@
 #include "uart.h"
 #include "adc.h"
 #include "cm3_driver.h"
+#include "mem.h"
+#include "nct75.h"
 
 
 #define PRINTF(...) printf(__VA_ARGS__)
