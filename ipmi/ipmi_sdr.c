@@ -3,7 +3,7 @@
  * @Date         : 2025-08-06 17:06:19
  * @Encoding     : UTF-8
  * @LastEditors  : stoneBeast
- * @LastEditTime : 2025-10-21 15:46:23
+ * @LastEditTime : 2025-10-22 14:41:37
  * @Description  : 
  */
 
@@ -28,40 +28,40 @@ static sensor_info sdr_list[SENSOR_MAX_NUMBER];
 static uint16_t sdr_count = 0;
 
 #define MIN(a, b) (a > b ? b : a)
-#define FILL_SDR_STRUCT(p_sensor_info, no, id, type, unit, sig, higher, lower, read_handler, readArg, init_func, initArg, M, K, name, n_len) \
-    {                                                                                                                                        \
-        (p_sensor_info)->sdr.sensor_no = no;                                                                                                \
-        (p_sensor_info)->sdr.ipmc_addr = g_addr;                                                                                            \
-        (p_sensor_info)->sdr_id = id;                                                                                                        \
-        (p_sensor_info)->sdr.sensor_type = type;                                                                                            \
-        (p_sensor_info)->sdr.unit_code = unit;                                                                                              \
-        (p_sensor_info)->sdr.is_signed = sig;                                                                                               \
-        (p_sensor_info)->sdr.read_data = 0;                                                                                                 \
-        (p_sensor_info)->sdr.higher_threshold = higher;                                                                                     \
-        (p_sensor_info)->sdr.lower_threshold = lower;                                                                                       \
-        (p_sensor_info)->sensor_read = read_handler;                                                                                         \
-        (p_sensor_info)->read_arg = readArg;                                                                                                 \
-        (p_sensor_info)->sensor_init = init_func;                                                                                            \
-        (p_sensor_info)->init_arg = initArg;                                                                                                 \
-        (p_sensor_info)->sdr.argM = M;                                                                                                      \
-        (p_sensor_info)->sdr.argK = K;                                                                                                      \
-        memset((p_sensor_info)->sdr.sensor_name, 0, SENSOR_NAME_MAX_LEN);                                                                   \
-        memcpy((p_sensor_info)->sdr.sensor_name, name, MIN(n_len, SENSOR_NAME_MAX_LEN));                                                    \
-        (p_sensor_info)->sdr.name_len = MIN(n_len, SENSOR_NAME_MAX_LEN);                                                                    \
-        sdr_count+=1;                                                                                                                        \
+#define FILL_SDR_STRUCT(p_sensor_info, no, id, type, unit, sig, higher, lower, read_handler, readArg, init_func, initArg, M, K, name) \
+    {                                                                                                                                 \
+        (p_sensor_info)->sdr.sensor_no = no;                                                                                          \
+        (p_sensor_info)->sdr.ipmc_addr = BMC_ADDR;                                                                                    \
+        (p_sensor_info)->sdr_id = id;                                                                                                 \
+        (p_sensor_info)->sdr.sensor_type = type;                                                                                      \
+        (p_sensor_info)->sdr.unit_code = unit;                                                                                        \
+        (p_sensor_info)->sdr.is_signed = sig;                                                                                         \
+        (p_sensor_info)->sdr.read_data = 0;                                                                                           \
+        (p_sensor_info)->sdr.higher_threshold = higher;                                                                               \
+        (p_sensor_info)->sdr.lower_threshold = lower;                                                                                 \
+        (p_sensor_info)->sensor_read = read_handler;                                                                                  \
+        (p_sensor_info)->read_arg = readArg;                                                                                          \
+        (p_sensor_info)->sensor_init = init_func;                                                                                     \
+        (p_sensor_info)->init_arg = initArg;                                                                                          \
+        (p_sensor_info)->sdr.argM = M;                                                                                                \
+        (p_sensor_info)->sdr.argK = K;                                                                                                \
+        memset((p_sensor_info)->sdr.sensor_name, 0, SENSOR_NAME_MAX_LEN);                                                             \
+        strncpy((p_sensor_info)->sdr.sensor_name, name, MIN(strlen(name), SENSOR_NAME_MAX_LEN));                                      \
+        (p_sensor_info)->sdr.name_len = MIN(strlen(name), SENSOR_NAME_MAX_LEN);                                                       \
+        sdr_count += 1;                                                                                                               \
     }
 
 void init_ipmi_sdr(void)
 {
     uint8_t i = 0;
 
-    FILL_SDR_STRUCT(&(sdr_list[0]), 1, 1, 
-                    SENSOR_TYPE_VOLTAGE, 
-                    SENSOR_UNIT_CODE_V,
-                    0, 0xFFFF, 0x000A, 
-                    get_channel_data, 0, 
-                    init_adc, NULL, 
-                    8056, -7, "ADC01", 5);
+    FILL_SDR_STRUCT(&(sdr_list[0]), 1, 1,
+                    SENSOR_TYPE_POWER,
+                    SENSOR_UNIT_CODE_A,
+                    0, 0xFFFF, 0x000A,
+                    get_channel_data, 0,
+                    init_adc, NULL,
+                    25998, -7, "ADC01");
 
     FILL_SDR_STRUCT(&(sdr_list[1]), 2, 2, 
                     SENSOR_TYPE_VOLTAGE, 
@@ -69,7 +69,7 @@ void init_ipmi_sdr(void)
                     0, 0xFFFF, 0x0000, 
                     get_channel_data, 1, 
                     NULL, NULL, 
-                    8056, -7, "ADC02", 5);
+                    16113, -7, "ADC02");
 
     FILL_SDR_STRUCT(&(sdr_list[2]), 3, 3, 
                     SENSOR_TYPE_VOLTAGE, 
@@ -77,7 +77,7 @@ void init_ipmi_sdr(void)
                     0, 0xFFFF, 0x0000, 
                     get_channel_data, 2, 
                     NULL, NULL, 
-                    8056, -7, "ADC03", 5);
+                    16113, -7, "ADC03");
 
     
     FILL_SDR_STRUCT(&(sdr_list[3]), 4, 4, 
@@ -86,7 +86,7 @@ void init_ipmi_sdr(void)
                     0, 0xFFFF, 0x0000, 
                     get_channel_data, 3, 
                     NULL, NULL, 
-                    8056, -7, "ADC04", 5);
+                    16113, -7, "ADC04");
 
     FILL_SDR_STRUCT(&(sdr_list[4]), 5, 5,
                     SENSOR_TYPE_TEMPERATURE,
@@ -94,7 +94,7 @@ void init_ipmi_sdr(void)
                     1, 0xFFF, 0x0000,
                     read_nct75_row_data, SENSOR_NCT75_1_ADDR,
                     NULL, NULL,
-                    625, -4, "TMP_A", 5);
+                    625, -4, "TMP_A");
 
     FILL_SDR_STRUCT(&(sdr_list[5]), 6, 6,
                     SENSOR_TYPE_TEMPERATURE,
@@ -102,7 +102,7 @@ void init_ipmi_sdr(void)
                     1, 0xFFF, 0x0000,
                     read_nct75_row_data, SENSOR_NCT75_2_ADDR,
                     NULL, NULL,
-                    625, -4, "TMP_B", 5);
+                    625, -4, "TMP_B");
 
     for (i = 0; i < SENSOR_MAX_NUMBER; i++) {
         if (sdr_list[i].sensor_init != NULL) {
