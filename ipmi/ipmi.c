@@ -45,6 +45,16 @@ static void get_ipmb_addr(void)
     g_addr = temp_addr;
 }
 
+static uint8_t get_version_info_handler(char* const info)
+{
+    uint8_t info_len = 0;
+
+    sprintf((char*)info, "Version %d.%d.%d Built on %s %s", MAIN_VERSION, SUB_VERSION, FIX_VERSION, __DATE__, __TIME__);
+    info_len = strlen((char*)info);
+
+    return info_len;
+}
+
 void ipmi_msg_handler(void)
 {
     uint8_t req[IPMI_PROTOCOL_MAX_LEN] = {0};
@@ -72,6 +82,9 @@ void ipmi_msg_handler(void)
             temp_data = get_sdr_by_id(req[IPMI_PROTOCOL_MSG_DATA_OFFSET], (ipmi_sdr*)(&(res[1])));
             res[0] = temp_data;
             res_body_len = 1+sizeof(ipmi_sdr);
+            break;
+        case IPMI_MSG_CODE_GET_VERSION:
+            res_body_len = get_version_info_handler((char*)res);
             break;
         default:
             memcpy(req, temp_res, strlen(temp_res));
