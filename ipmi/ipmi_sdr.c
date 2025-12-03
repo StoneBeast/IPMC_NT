@@ -3,7 +3,7 @@
  * @Date         : 2025-08-06 17:06:19
  * @Encoding     : UTF-8
  * @LastEditors  : stoneBeast
- * @LastEditTime : 2025-10-22 14:41:37
+ * @LastEditTime : 2025-12-03 17:52:30
  * @Description  : 
  */
 
@@ -61,32 +61,58 @@ void init_ipmi_sdr(void)
                     0, 0xFFFF, 0x000A,
                     get_channel_data, 0,
                     init_adc, NULL,
-                    25998, -7, "ADC01");
+                    30961, -7, "12V_MON");
 
-    FILL_SDR_STRUCT(&(sdr_list[1]), 2, 2, 
-                    SENSOR_TYPE_VOLTAGE, 
-                    SENSOR_UNIT_CODE_V,
-                    0, 0xFFFF, 0x0000, 
-                    get_channel_data, 1, 
-                    NULL, NULL, 
-                    16113, -7, "ADC02");
-
-    FILL_SDR_STRUCT(&(sdr_list[2]), 3, 3, 
-                    SENSOR_TYPE_VOLTAGE, 
-                    SENSOR_UNIT_CODE_V,
-                    0, 0xFFFF, 0x0000, 
-                    get_channel_data, 2, 
-                    NULL, NULL, 
-                    16113, -7, "ADC03");
-
+                    
+    if (g_addr == 0x88) {
+        FILL_SDR_STRUCT(&(sdr_list[1]), 2, 2, 
+                        SENSOR_TYPE_VOLTAGE, 
+                        SENSOR_UNIT_CODE_V,
+                        0, 0xFFFF, 0x0000, 
+                        get_channel_data, 1, 
+                        NULL, NULL, 
+                        16113, -7, "3V3");
     
-    FILL_SDR_STRUCT(&(sdr_list[3]), 4, 4, 
-                    SENSOR_TYPE_VOLTAGE, 
-                    SENSOR_UNIT_CODE_V,
-                    0, 0xFFFF, 0x0000, 
-                    get_channel_data, 3, 
-                    NULL, NULL, 
-                    16113, -7, "ADC04");
+        FILL_SDR_STRUCT(&(sdr_list[2]), 3, 3, 
+                        SENSOR_TYPE_VOLTAGE, 
+                        SENSOR_UNIT_CODE_V,
+                        0, 0xFFFF, 0x0000, 
+                        get_channel_data, 2, 
+                        NULL, NULL, 
+                        16113, -7, "1V");
+                        FILL_SDR_STRUCT(&(sdr_list[3]), 4, 4, 
+                        SENSOR_TYPE_VOLTAGE, 
+                        SENSOR_UNIT_CODE_V,
+                        0, 0xFFFF, 0x0000, 
+                        get_channel_data, 3, 
+                        NULL, NULL, 
+                        16113, -7, "3V3");
+    } else {
+        FILL_SDR_STRUCT(&(sdr_list[1]), 2, 2, 
+                        SENSOR_TYPE_VOLTAGE, 
+                        SENSOR_UNIT_CODE_V,
+                        0, 0xFFFF, 0x0000, 
+                        get_channel_data, 1, 
+                        NULL, NULL, 
+                        16113, -7, "1V");
+    
+        FILL_SDR_STRUCT(&(sdr_list[2]), 3, 3, 
+                        SENSOR_TYPE_VOLTAGE, 
+                        SENSOR_UNIT_CODE_V,
+                        0, 0xFFFF, 0x0000, 
+                        get_channel_data, 2, 
+                        NULL, NULL, 
+                        16113, -7, "3V3");
+                        
+        FILL_SDR_STRUCT(&(sdr_list[3]), 4, 4, 
+                        SENSOR_TYPE_VOLTAGE, 
+                        SENSOR_UNIT_CODE_V,
+                        0, 0xFFFF, 0x0000, 
+                        get_channel_data, 3, 
+                        NULL, NULL, 
+                        16113, -7, "5V");
+    }
+                    
 
     FILL_SDR_STRUCT(&(sdr_list[4]), 5, 5,
                     SENSOR_TYPE_TEMPERATURE,
