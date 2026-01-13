@@ -2,3 +2,23 @@
 project/*
 !project/RCT6_Project.uvoptx
 !project/RCT6_Project.uvprojx
+/.cmsis
+
+# dot files
+/.vscode/launch.json
+/.settings
+/.eide/log
+/.eide.usr.ctx.json
+
+# project out
+/build
+/bin
+/obj
+/out
+
+# keil project file
+/project
+
+# eide template
+*.ept
+*.eide-template
