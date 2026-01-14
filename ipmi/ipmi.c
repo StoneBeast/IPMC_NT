@@ -3,7 +3,7 @@
  * @Date         : 2025-07-29 15:15:04
  * @Encoding     : UTF-8
  * @LastEditors  : stoneBeast
- * @LastEditTime : 2025-08-13 14:35:44
+ * @LastEditTime : 2026-01-14 11:33:36
  * @Description  : 
  */
 
@@ -47,10 +47,15 @@ static void get_ipmb_addr(void)
 
 static uint8_t get_version_info_handler(char* const info)
 {
+    // 版本信息格式 | M(1) | S(1) | F(1) | DATE | TIME |
     uint8_t info_len = 0;
 
-    sprintf((char*)info, "Version %d.%d.%d Built on %s %s", MAIN_VERSION, SUB_VERSION, FIX_VERSION, __DATE__, __TIME__);
-    info_len = strlen((char*)info);
+    sprintf((char*)(info+3), "%s %s", __DATE__, __TIME__);
+    info[0] = MAIN_VERSION;
+    info[1] = SUB_VERSION;
+    info[2] = FIX_VERSION;
+
+    info_len = 3 + strlen((char*)(info+3));
 
     return info_len;
 }
